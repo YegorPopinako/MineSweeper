@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Linq;
 
 namespace Sapper
 {
@@ -15,10 +16,12 @@ namespace Sapper
         int distance = 40; // between button
         int openedCells = 0;
         int bombs = 0;
+        
 
         Image Flag = Image.FromFile(@"C:\Users\38096\source\repos\draft\Sapper\Flag.PNG");
         Image Bomb = Image.FromFile(@"C:\Users\38096\source\repos\draft\Sapper\Bomb.PNG");
         ButtonPlus[,] buttonsArray;
+        
 
         public Form1()
         {
@@ -95,6 +98,7 @@ namespace Sapper
             }
         }
 
+
         void Win()
         {
             int allCells = w * h;
@@ -135,7 +139,10 @@ namespace Sapper
             {
                 if (button.isBomb)
                 {
-                    Explosion(button);
+                    var recordedBombs = (from ButtonPlus b in buttonsArray
+                                         where b.isBomb
+                                         select b).ToList();
+                    Explosion(recordedBombs);
                 }
                 else
                 {
@@ -145,15 +152,13 @@ namespace Sapper
             }
         }
 
+
         //yes Ricko, kaboom
-        void Explosion(ButtonPlus b)
+        private void Explosion(List<ButtonPlus> recordedBombs)
         {
-            for (int i = 0; i < w; i++)
+            foreach (Button button in recordedBombs)
             {
-                for (int j = 0; j < h; j++)
-                {
-                    if (buttonsArray[i, j].isBomb) buttonsArray[i, j].BackgroundImage = Bomb;
-                }
+                button.BackgroundImage = Bomb;
             }
             MessageBox.Show("You lost");
             Application.Restart();
